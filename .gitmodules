@@ -1,0 +1,3 @@
+[submodule "KickoffOnly"]
+	path = KickoffOnly
+	url = https://github.com/VirxEC/KickoffOnly.git
