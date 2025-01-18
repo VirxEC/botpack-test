@@ -26,6 +26,7 @@ jobs:
 
       # re-assemble bob_build directory from the latest release
       - uses: robinraju/release-downloader@v1
+        continue-on-error: true
         with:
           latest: true
           fileName: '*-full.tar.xz'
@@ -33,6 +34,7 @@ jobs:
           extract: true
 
       - name: Save old build info
+        continue-on-error: true
         run: cp bob_build/buildinfo.toml buildinfo.toml
 
       - name: Build
