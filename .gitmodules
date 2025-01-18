@@ -1,3 +1,6 @@
 [submodule "KickoffOnly"]
 	path = Botpack/KickoffOnly
 	url = https://github.com/VirxEC/KickoffOnly.git
+[submodule "Botpack/RLBot-Beast"]
+	path = Botpack/RLBot-Beast
+	url = https://github.com/NicEastvillage/RLBot-Beast.git
