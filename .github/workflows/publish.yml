@@ -32,9 +32,10 @@ jobs:
         with:
           latest: true
           fileName: '*-full.tar.xz'
-          out-file-path: 'bob_build'
-          tarBall: true
-          extract: true
+
+      - name: Extract archives
+        if: ${{ hashFiles('bob_build/buildinfo.toml') != '' }}
+        run: mkdir -p bob_build && for file in *.tar.xz; do tar -xf "$file" -C bob_build; done
 
       - name: Save old build info
         if: ${{ hashFiles('bob_build/buildinfo.toml') != '' }}
