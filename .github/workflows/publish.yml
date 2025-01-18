@@ -33,6 +33,7 @@ jobs:
           latest: true
           fileName: '*-full.tar.xz'
           out-file-path: 'bob_build'
+          tarBall: true
           extract: true
 
       - name: Save old build info
