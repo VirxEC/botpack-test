@@ -16,6 +16,8 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -34,7 +36,7 @@ jobs:
           extract: true
 
       - name: Save old build info
-        continue-on-error: true
+        if: ${{ hashFiles('bob_build/buildinfo.toml') != '' }}
         run: cp bob_build/buildinfo.toml buildinfo.toml
 
       - name: Build
