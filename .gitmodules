@@ -3,4 +3,4 @@
 	url = https://github.com/VirxEC/KickoffOnly.git
 [submodule "Botpack/RLBot-Beast"]
 	path = Botpack/RLBot-Beast
-	url = https://github.com/NicEastvillage/RLBot-Beast.git
+	url = https://github.com/VirxEC/RLBot-Beast.git
