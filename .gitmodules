@@ -4,3 +4,6 @@
 [submodule "Botpack/RLBot-Beast"]
 	path = Botpack/RLBot-Beast
 	url = https://github.com/VirxEC/RLBot-Beast.git
+[submodule "Botpack/Elementv5"]
+	path = Botpack/Elementv5
+	url = https://github.com/VirxEC/Elementv5.git
