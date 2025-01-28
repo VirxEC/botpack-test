@@ -36,7 +36,8 @@ jobs:
       - name: Extract archives
         if: ${{ hashFiles('*.tar.xz') != '' }}
         run: |
-          mkdir -p bob_build && for file in *.tar.xz; do tar -xf "$file" -C bob_build; done
+          mkdir -p bob_build
+          for file in *.tar.xz; do tar --transform 's|^[^/]*|bob_build|' -xf "$file"; done
           mv buildinfo.toml bob_build/
           echo "yes" > had_prev
 
