@@ -20,11 +20,6 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Docker caching
-        uses: ScribeMD/docker-cache@0.5.0
-        with:
-          key: docker-${{ runner.os }}-${{ hashFiles('bob') }}
-
       # re-assemble bob_build directory from the latest release
       - uses: robinraju/release-downloader@v1
         continue-on-error: true
@@ -32,33 +27,46 @@ jobs:
           latest: true
           fileName: '*.tar.xz'
 
+      - uses: robinraju/release-downloader@v1
+        continue-on-error: true
+        with:
+          latest: true
+          fileName: 'buildinfo.toml'
+
       - name: Extract archives
         if: ${{ hashFiles('*.tar.xz') != '' }}
-        run: mkdir -p bob_build && for file in *.tar.xz; do tar -xf "$file" -C bob_build; done
+        run: |
+          mkdir -p bob_build && for file in *.tar.xz; do tar -xf "$file" -C bob_build; done
+          mv buildinfo.toml bob_build/
+          echo "yes" > had_prev
 
       - name: Copy old botpack
-        if: ${{ hashFiles('*.tar.xz') != '' }}
+        if: ${{ hashFiles('had_prev') != '' }}
         run: cp -r bob_build bob_build_old
+
+      - name: Split old platforms
+        if: ${{ hashFiles('had_prev') != '' }}
+        run: ./bob split bob_build_old
 
       - name: Build
         run: ./bob build bob.toml
 
-      - name: Split platforms
-        run: |
-          ./bob split bob_build_old
-          ./bob split bob_build
-
-      - name: Generate platform diffs
-        run: |
-          ./bob diff bob_build_old_x86_64-windows bob_build_x86_64-windows > patch_x86_64-windows.bobdiff
-          ./bob diff bob_build_old_x86_64-linux bob_build_x86_64-linux > patch_x86_64-linux.bobdiff
+      - name: Split new platforms
+        run: ./bob split bob_build
 
       - name: Compress full botpack
         run: |
           tar cf - bob_build_x86_64-windows | xz -9 > botpack_x86_64-windows.tar.xz
           tar cf - bob_build_x86_64-linux | xz -9 > botpack_x86_64-linux.tar.xz
 
+      - name: Generate platform diffs
+        if: ${{ hashFiles('had_prev') != '' }}
+        run: |
+          ./bob diff bob_build_old_x86_64-windows bob_build_x86_64-windows > patch_x86_64-windows.bobdiff
+          ./bob diff bob_build_old_x86_64-linux bob_build_x86_64-linux > patch_x86_64-linux.bobdiff
+
       - name: Compress botpack diffs
+        if: ${{ hashFiles('had_prev') != '' }}
         run: |
           xz -9 patch_x86_64-windows.bobdiff
           xz -9 patch_x86_64-linux.bobdiff
@@ -69,4 +77,5 @@ jobs:
           files: |
             botpack_*.tar.xz
             patch_*.bobdiff.xz
+            bob_build/buildinfo.toml
           body: 'Pre-built binaries of various bots'
