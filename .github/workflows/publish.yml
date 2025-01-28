@@ -5,7 +5,7 @@ name: Publish
 on:
   push:
     tags:
-      - "*-*"
+      - "r-*"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -31,24 +31,43 @@ jobs:
         continue-on-error: true
         with:
           latest: true
-          fileName: '*-full.tar.xz'
+          fileName: '*.tar.xz'
 
       - name: Extract archives
-        if: ${{ hashFiles('*-full.tar.xz') != '' }}
+        if: ${{ hashFiles('*.tar.xz') != '' }}
         run: mkdir -p bob_build && for file in *.tar.xz; do tar -xf "$file" -C bob_build; done
 
-      - name: Save old build info
-        if: ${{ hashFiles('*-full.tar.xz') != '' }}
-        run: cp bob_build/buildinfo.toml buildinfo.toml
+      - name: Copy old botpack
+        if: ${{ hashFiles('*.tar.xz') != '' }}
+        run: cp -r bob_build bob_build_old
 
       - name: Build
         run: ./bob build bob.toml
 
-      - name: Package
-        run: ./bob pack --old-buildinfo buildinfo.toml
+      - name: Split platforms
+        run: |
+          ./bob split bob_build_old
+          ./bob split bob_build
+
+      - name: Generate platform diffs
+        run: |
+          ./bob diff bob_build_old_x86_64-windows bob_build_x86_64-windows > patch_x86_64-windows.bobdiff
+          ./bob diff bob_build_old_x86_64-linux bob_build_x86_64-linux > patch_x86_64-linux.bobdiff
+
+      - name: Compress full botpack
+        run: |
+          tar cf - bob_build_x86_64-windows | xz -9 > botpack_x86_64-windows.tar.xz
+          tar cf - bob_build_x86_64-linux | xz -9 > botpack_x86_64-linux.tar.xz
+
+      - name: Compress botpack diffs
+        run: |
+          xz -9 patch_x86_64-windows.bobdiff
+          xz -9 patch_x86_64-linux.bobdiff
 
       - name: Publish to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          files: ./bob_build/*.tar.xz
+          files: |
+            botpack_*.tar.xz
+            patch_*.bobdiff.xz
           body: 'Pre-built binaries of various bots'
