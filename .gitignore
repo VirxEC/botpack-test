@@ -1,1 +1,2 @@
-bob_build/
+bob_build*
+*.xz
