@@ -22,32 +22,41 @@ jobs:
 
       # re-assemble bob_build directory from the latest release
       - uses: robinraju/release-downloader@v1
+        id: download_packs
         continue-on-error: true
         with:
           latest: true
           fileName: '*.tar.xz'
 
       - uses: robinraju/release-downloader@v1
+        id: download_buildinfo
         continue-on-error: true
         with:
           latest: true
           fileName: 'buildinfo.toml'
 
       - name: Extract archives
-        if: ${{ hashFiles('*.tar.xz') != '' }}
-        continue-on-error: true
+        if: ${{ steps.download_packs.outcome == 'success' }}
         run: |
           mkdir -p bob_build
           for file in *.tar.xz; do tar --transform 's|^[^/]*|bob_build|' -xf "$file"; done
+          echo "has_prev=true\n" >> $GITHUB_OUTPUT
+
+      - name: Copy in buildinfo
+        if: ${{ steps.download_buildinfo.outcome == 'success' }}
+        run: |
           mv buildinfo.toml bob_build/
-          echo "yes" > had_prev
+
+      - name: Remove bad buildinfos
+        if: ${{ steps.download_buildinfo.outcome != 'success' }}
+        run: find . -name 'buildinfo.toml' -delete
 
       - name: Copy old botpack
-        if: ${{ hashFiles('had_prev') != '' }}
+        if: ${{ steps.download_packs.outcome == 'success' }}
         run: cp -r bob_build bob_build_old
 
       - name: Split old platforms
-        if: ${{ hashFiles('had_prev') != '' }}
+        if: ${{ steps.download_packs.outcome == 'success' }}
         run: ./bob split bob_build_old
 
       - name: Build
