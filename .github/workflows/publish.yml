@@ -29,21 +29,23 @@ jobs:
           fileName: '*.tar.xz'
 
       - uses: robinraju/release-downloader@v1
-        id: download_buildinfo
         continue-on-error: true
         with:
           latest: true
           fileName: 'buildinfo.toml'
+
+      - uses: robinraju/release-downloader@v1
+        id: should_rebuild
+        continue-on-error: true
+        with:
+          latest: true
+          fileName: 'should_rebuild'
 
       - name: Extract archives
         if: ${{ steps.download_packs.outcome == 'success' }}
         run: |
           mkdir -p bob_build
           for file in *.tar.xz; do tar --transform 's|^[^/]*|bob_build|' -xf "$file"; done
-
-      - name: Copy in buildinfo
-        if: ${{ steps.download_buildinfo.outcome == 'success' }}
-        run: |
           mv buildinfo.toml bob_build/
 
       - name: Copy old botpack
@@ -54,8 +56,8 @@ jobs:
         if: ${{ steps.download_packs.outcome == 'success' }}
         run: ./bob split bob_build_old
 
-      - name: Remove other buildinfos
-        if: ${{ steps.download_buildinfo.outcome != 'success' }}
+      - name: Force rebuild by deleting buildinfo
+        if: ${{ steps.should_rebuild.outcome == 'success' }}
         run: find . -name 'buildinfo.toml' -delete
 
       - name: Build
@@ -87,5 +89,4 @@ jobs:
           files: |
             botpack_*.tar.xz
             patch_*.bobdiff.xz
-            bob_build/buildinfo.toml
           body: 'Pre-built binaries of various bots'
