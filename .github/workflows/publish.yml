@@ -40,16 +40,11 @@ jobs:
         run: |
           mkdir -p bob_build
           for file in *.tar.xz; do tar --transform 's|^[^/]*|bob_build|' -xf "$file"; done
-          echo "has_prev=true\n" >> $GITHUB_OUTPUT
 
       - name: Copy in buildinfo
         if: ${{ steps.download_buildinfo.outcome == 'success' }}
         run: |
           mv buildinfo.toml bob_build/
-
-      - name: Remove bad buildinfos
-        if: ${{ steps.download_buildinfo.outcome != 'success' }}
-        run: find . -name 'buildinfo.toml' -delete
 
       - name: Copy old botpack
         if: ${{ steps.download_packs.outcome == 'success' }}
@@ -58,6 +53,10 @@ jobs:
       - name: Split old platforms
         if: ${{ steps.download_packs.outcome == 'success' }}
         run: ./bob split bob_build_old
+
+      - name: Remove other buildinfos
+        if: ${{ steps.download_buildinfo.outcome != 'success' }}
+        run: find . -name 'buildinfo.toml' -delete
 
       - name: Build
         run: ./bob build bob.toml
@@ -71,13 +70,13 @@ jobs:
           tar cf - bob_build_x86_64-linux | xz -9 > botpack_x86_64-linux.tar.xz
 
       - name: Generate platform diffs
-        if: ${{ hashFiles('had_prev') != '' }}
+        if: ${{ steps.download_packs.outcome == 'success' }}
         run: |
           ./bob diff bob_build_old_x86_64-windows bob_build_x86_64-windows > patch_x86_64-windows.bobdiff
           ./bob diff bob_build_old_x86_64-linux bob_build_x86_64-linux > patch_x86_64-linux.bobdiff
 
       - name: Compress botpack diffs
-        if: ${{ hashFiles('had_prev') != '' }}
+        if: ${{ steps.download_packs.outcome == 'success' }}
         run: |
           xz -9 patch_x86_64-windows.bobdiff
           xz -9 patch_x86_64-linux.bobdiff
