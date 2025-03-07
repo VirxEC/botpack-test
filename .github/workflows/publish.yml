@@ -89,4 +89,5 @@ jobs:
           files: |
             botpack_*.tar.xz
             patch_*.bobdiff.xz
+            bob_build/buildinfo.toml
           body: 'Pre-built binaries of various bots'
