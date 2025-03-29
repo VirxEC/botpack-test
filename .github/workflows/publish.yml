@@ -77,17 +77,11 @@ jobs:
           ./bob diff bob_build_old_x86_64-windows bob_build_x86_64-windows > patch_x86_64-windows.bobdiff
           ./bob diff bob_build_old_x86_64-linux bob_build_x86_64-linux > patch_x86_64-linux.bobdiff
 
-      - name: Compress botpack diffs
-        if: ${{ steps.download_packs.outcome == 'success' }}
-        run: |
-          xz -9 patch_x86_64-windows.bobdiff
-          xz -9 patch_x86_64-linux.bobdiff
-
       - name: Publish to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
           files: |
             botpack_*.tar.xz
-            patch_*.bobdiff.xz
+            patch_*.bobdiff
             bob_build/buildinfo.toml
           body: 'Pre-built binaries of various bots'
