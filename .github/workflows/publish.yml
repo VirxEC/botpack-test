@@ -28,6 +28,8 @@ jobs:
           fileName: 'bob_*_x86_64-unknown-linux-musl.zip'
           extract: true
 
+      - run: chmod +x bob
+
       # re-assemble bob_build directory from the latest release
       - uses: robinraju/release-downloader@v1
         id: download_packs
