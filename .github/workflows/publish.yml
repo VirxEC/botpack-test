@@ -20,6 +20,14 @@ jobs:
         with:
           submodules: 'recursive'
 
+      - name: Download bob
+        uses: robinraju/release-downloader@v1
+        with:
+          repository: 'swz-git/bob'
+          latest: true
+          fileName: 'bob_*_x86_64-unknown-linux-musl.zip'
+          extract: true
+
       # re-assemble bob_build directory from the latest release
       - uses: robinraju/release-downloader@v1
         id: download_packs
