@@ -7,3 +7,6 @@
 [submodule "Botpack/Elementv5"]
 	path = Botpack/Elementv5
 	url = https://github.com/VirxEC/Elementv5.git
+[submodule "Botpack/zero-g-script"]
+	path = Botpack/zero-g-script
+	url = https://github.com/swz-git/zero-g-script.git
