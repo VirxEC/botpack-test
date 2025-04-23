@@ -111,6 +111,7 @@ jobs:
       - name: Publish to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: steps.get_tag.outputs.new_tag
           files: |
             botpack_*.tar.xz
             patch_*.bobdiff
