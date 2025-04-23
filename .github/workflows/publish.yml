@@ -39,7 +39,7 @@ jobs:
 
           echo "Latest tag: $latest_tag"
           echo "New tag: $new_tag"
-          echo "::set-output name=new_tag::$new_tag"
+          echo "new_tag=$new_tag"
 
       - name: Download bob
         uses: robinraju/release-downloader@v1
