@@ -19,11 +19,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-          fetch-tags: true
 
       - name: Determine next tag
         id: get_tag
         run: |
+          git fetch --tags
+
           # Get the latest tag in the format r-N
           latest_tag=$(git tag | grep -E '^r-[0-9]+$' | sort -V | tail -n 1)
 
@@ -39,7 +40,7 @@ jobs:
 
           echo "Latest tag: $latest_tag"
           echo "New tag: $new_tag"
-          echo "new_tag=$new_tag"
+          echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
 
       - name: Download bob
         uses: robinraju/release-downloader@v1
