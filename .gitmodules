@@ -13,3 +13,6 @@
 [submodule "Botpack/mirror-bot"]
 	path = Botpack/mirror-bot
 	url = https://github.com/Darxeal/mirror-bot.git
+[submodule "Botpack/NectoFamily"]
+	path = Botpack/NectoFamily
+	url = https://github.com/VirxEC/NectoFamily.git
