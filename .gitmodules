@@ -16,3 +16,6 @@
 [submodule "Botpack/NectoFamily"]
 	path = Botpack/NectoFamily
 	url = https://github.com/VirxEC/NectoFamily.git
+[submodule "Botpack/RLBotPhoenixCS"]
+	path = Botpack/RLBotPhoenixCS
+	url = https://github.com/NicEastvillage/RLBotPhoenixCS.git
